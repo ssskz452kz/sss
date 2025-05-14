@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-kk="Ақылды ауыл шаруашылығы симуляторы" data-lang-ru="Умный симулятор сельского хозяйства">Ақылды ауыл шаруашылығы симуляторы</title>
+    <style>
+        /* Existing styles remain unchanged */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: linear-gradient(to bottom, #e8f5e9, #ffffff); color: #333; line-height: 1.6; }
+        .navbar { background: #4CAF50; padding: 15px; display: flex; justify-content: space-around; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: fixed; width: 100%; top: 0; z-index: 10; }
+        .navbar a { color: white; text-decoration: none; font-size: 16px; padding: 10px 20px; cursor: pointer; transition: background 0.3s; }
+        .navbar a:hover, .navbar a.active { background: #388E3C; border-radius: 5px; }
+        .lang-switch { position: absolute; right: 20px; top: 15px; }
+        .lang-btn { background: #388E3C; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .lang-btn:hover { background: #2E7D32; }
+        .container { max-width: 1200px; margin: 80px auto 20px; padding: 20px; }
+        .section { display: none; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .section.active { display: block; }
+        .btn { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
+        .btn:hover { background: #388E3C; }
+        .progress-bar { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 10px 0; display: none; }
+        .progress-fill { width: 0; height: 100%; background: #4CAF50; transition: width 2s ease-in-out; }
+        .crop-monitor { display: flex; gap: 20px; }
+        .upload-box { border: 2px dashed #4CAF50; padding: 40px; border-radius: 10px; text-align: center; cursor: pointer; transition: background 0.3s; }
+        .upload-box:hover { background: #f1f8e9; }
+        .result-img { width: 100%; max-width: 300px; border-radius: 10px; margin: 10px 0; }
+        .health-bar { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; }
+        .health-fill { width: 90%; height: 100%; background: #4CAF50; }
+        input[type="file"] { display: none; }
+        .irrigation .status { display: flex; gap: 20px; margin-bottom: 20px; }
+        .status-card { flex: 1; padding: 15px; background: #f1f8e9; border-radius: 10px; text-align: center; }
+        .plan-card { display: flex; justify-content: space-between; padding: 10px; background: #f1f8e9; border-radius: 5px; margin-bottom: 10px; }
+        .chart { width: 100%; height: 200px; border-radius: 10px; object-fit: cover; }
+        .robot .path-map { height: 300px; width: 100%; border-radius: 10px; object-fit: cover; }
+        .robot .report { margin-top: 20px; }
+        .weather { display: flex; gap: 10px; margin-bottom: 20px; }
+        .weather-card { flex: 1; padding: 10px; background: #f1f8e9; border-radius: 5px; text-align: center; }
+        .dashboard { display: flex; gap: 20px; }
+        .dash-item { flex: 1; text-align: center; }
+        .suggestion { margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 5px; }
+        .date-input { padding: 10px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .farm { display: flex; gap: 20px; }
+        .farm .overview, .farm .tasks { flex: 1; }
+        .progress { width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 75%; height: 100%; background: #4CAF50; }
+        .task-item { padding: 10px; background: #f1f8e9; border-radius: 5px; margin-bottom: 10px; }
+        .farm-img { width: 100%; max-width: 300px; border-radius: 10px; margin: 10px 0; }
+        .market .chart { margin-bottom: 20px; height: 200px; width: 100%; border-radius: 10px; object-fit: cover; }
+        .calc-input { padding: 10px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .news { padding: 15px; background: #f1f8e9; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a onclick="showSection('crop-monitor')" data-lang-kk="Топырақ пен егінді цифрлық бақылауы" data-lang-ru="Цифровой мониторинг почвы и урожая">Топырақ пен егінді цифрлық бақылауы</a>
+        <a onclick="showSection('irrigation')" data-lang-kk="Ақылды суару" data-lang-ru="Умный полив">Ақылды суару</a>
+        <a onclick="showSection('robot')" data-lang-kk="Автоматтандырылған жабдықтар" data-lang-ru="Автоматизированное оборудование">Автоматтандырылған жабдықтар</a>
+        <a onclick="showSection('weather')" data-lang-kk="AI метеорологиялық деректер" data-lang-ru="Метеоданные с ИИ">AI метеорологиялық деректер</a>
+        <a onclick="showSection('farm')" data-lang-kk="Ақылды ауыл шаруашылығы" data-lang-ru="Умное сельское хозяйство">Ақылды ауыл шаруашылығы</a>
+        <a onclick="showSection('market')" data-lang-kk="Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу" data-lang-ru="Прогнозирование урожайности и помощь в принятии решений на основе данных">Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу</a>
+        <div class="lang-switch">
+            <button class="lang-btn" onclick="switchLanguage('kk')">Қазақша</button>
+            <button class="lang-btn" onclick="switchLanguage('ru')">Русский</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Other sections remain unchanged -->
+        <div id="market" class="section market">
+            <h2 data-lang-kk="Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу" data-lang-ru="Прогнозирование урожайности и помощь в принятии решений на основе данных">Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу</h2>
+            <img src="market.jpg" alt="Нарық трендтері" class="chart">
+            <div class="calculator">
+                <h3 data-lang-kk="Пайда симуляциясы" data-lang-ru="Симуляция прибыли">Пайда симуляциясы</h3>
+                <input type="text" class="calc-input" id="area" placeholder="Егіс алаңы (гектар)" value="100" data-lang-kk-placeholder="Егіс алаңы (гектар)" data-lang-ru-placeholder="Площадь посева (гектары)">
+                <input type="text" class="calc-input" id="crop-type" placeholder="Егін түрі" value="Бидай" data-lang-kk-placeholder="Егін түрі" data-lang-ru-placeholder="Тип урожая">
+                <button class="btn" onclick="calculateProfit()" data-lang-kk="Пайданы есептеу" data-lang-ru="Рассчитать прибыль">Пайданы есептеу</button>
+                <div class="progress-bar" id="market-progress"><div class="progress-fill" id="market-fill"></div></div>
+                <p><strong data-lang-kk="Болжамды пайда:" data-lang-ru="Прогнозируемая прибыль:"></strong><span id="profit" data-lang-kk="Есептеуді күтіңіз" data-lang-ru="Ожидание расчета">Есептеуді күтіңіз</span></p>
+            </div>
+            <div class="news"><strong data-lang-kk="Нарық жаңалықтары:" data-lang-ru="Новости рынка:"></strong><span data-lang-kk="Бидай бағасы осы аптада 5%-ға өсті." data-lang-ru="Цена на пшеницу выросла на 5% на этой неделе.">Бидай бағасы осы аптада 5%-ға өсті.</span></div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            kk: {
+                title: 'Ақылды ауыл шаруашылығы симуляторы',
+                crop_upload_alert: 'Суретті жүктеңіз!',
+                crop_suggestion: 'Егін аздап су тапшылығын сезінеді, суаруды арттыру ұсынылады.',
+                weather_date_alert: 'Күнді таңдаңыз!',
+                profit_alert: 'Талапқа сәйкес енгізіңіз: 100 гектар, Бидай',
+                profit_format: (amount) => `${amount.toLocaleString('kk')} теңге`,
+                default_crop: 'Бидай'
+            },
+            ru: {
+                title: 'Умный симулятор сельского хозяйства',
+                crop_upload_alert: 'Загрузите изображение!',
+                crop_suggestion: 'Урожай испытывает небольшой дефицит воды, рекомендуется увеличить полив.',
+                weather_date_alert: 'Выберите дату!',
+                profit_alert: 'Введите согласно требованиям: 100 гектаров, Пшеница',
+                profit_format: (amount) => `${amount.toLocaleString('ru')} тенге`,
+                default_crop: 'Пшеница'
+            }
+        };
+
+        function switchLanguage(lang) {
+            localStorage.setItem('language', lang);
+            document.querySelector('html').lang = lang;
+            document.querySelector('title').textContent = translations[lang].title;
+            document.querySelectorAll('[data-lang-kk]').forEach(elem => {
+                elem.textContent = elem.getAttribute(`data-lang-${lang}`);
+            });
+            document.querySelectorAll('input[data-lang-kk-placeholder]').forEach(input => {
+                input.placeholder = input.getAttribute(`data-lang-${lang}-placeholder`);
+            });
+            // Reset crop type input to default for the selected language
+            document.getElementById('crop-type').value = translations[lang].default_crop;
+        }
+
+        const savedLang = localStorage.getItem('language') || 'kk';
+        switchLanguage(savedLang);
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.navbar a').forEach(a => {
+                a.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function previewCrop(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('crop-result-img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function analyzeCrop() {
+            const img = document.getElementById('crop-result-img').src;
+            const lang = localStorage.getItem('language') || 'kk';
+            if (img === window.location.href + 'crop.jpg') {
+                alert(translations[lang].crop_upload_alert);
+                return;
+            }
+            const progress = document.getElementById('crop-progress');
+            const fill = document.getElementById('crop-fill');
+            const health = document.getElementById('crop-health');
+            const suggestion = document.getElementById('crop-suggestion');
+            const healthFill = document.getElementById('health-fill');
+
+            progress.style.display = 'block';
+            fill.style.width = '0';
+            setTimeout(() => {
+                fill.style.width = '100%';
+            }, 100);
+            setTimeout(() => {
+                progress.style.display = 'none';
+                health.textContent = '85%';
+                healthFill.style.width = '85%';
+                suggestion.textContent = translations[lang].crop_suggestion;
+            }, 2000);
+        }
+
+        function predictWeather() {
+            const dateInput = document.getElementById('weather-date').value;
+            const lang = localStorage.getItem('language') || 'kk';
+            if (!dateInput) {
+                alert(translations[lang].weather_date_alert);
+                return;
+            }
+            const progress = document.getElementById('weather-progress');
+            const fill = document.getElementById('weather-fill');
+            progress.style.display = 'block';
+            fill.style.width = '0';
+            setTimeout(() => {
+                fill.style.width = '100%';
+            }, 100);
+
+            const selectedDate = new Date(dateInput);
+            const dates = [selectedDate];
+            for (let i = 1; i <= 2; i++) {
+                const nextDay = new Date(selectedDate);
+                nextDay.setDate(selectedDate.getDate() + i);
+                dates.push(nextDay);
+            }
+
+            setTimeout(() => {
+                progress.style.display = 'none';
+                document.getElementById('day1-date').textContent = dates[0].toLocaleDateString(lang);
+                document.getElementById('day1-weather').textContent = lang === 'kk' ? 'Ашық 26°C 15%' : 'Ясно 26°C 15%';
+                document.getElementById('day2-date').textContent = dates[1].toLocaleDateString(lang);
+                document.getElementById('day2-weather').textContent = lang === 'kk' ? 'Бұлтты 24°C 40%' : 'Облачно 24°C 40%';
+                document.getElementById('day3-date').textContent = dates[2].toLocaleDateString(lang);
+                document.getElementById('day3-weather').textContent = lang === 'kk' ? 'Жауын 22°C 70%' : 'Дождь 22°C 70%';
+            }, 2000);
+        }
+
+        function calculateProfit() {
+            const area = document.getElementById('area').value;
+            const cropType = document.getElementById('crop-type').value;
+            const lang = localStorage.getItem('language') || 'kk';
+            const expectedCrop = translations[lang].default_crop;
+
+            if (area !== '100' || cropType !== expectedCrop) {
+                alert(translations[lang].profit_alert);
+                return;
+            }
+
+            const progress = document.getElementById('market-progress');
+            const fill = document.getElementById('market-fill');
+            const profit = document.getElementById('profit');
+
+            progress.style.display = 'block';
+            fill.style.width = '0';
+            setTimeout(() => {
+                fill.style.width = '100%';
+            }, 100);
+            setTimeout(() => {
+                progress.style.display = 'none';
+                const minProfit = 12500000;
+                const maxProfit = 14000000;
+                const randomProfit = Math.floor(Math.random() * (maxProfit - minProfit + 1)) + minProfit;
+                profit.textContent = translations[lang].profit_format(randomProfit);
+            }, 2000);
+        }
+
+        document.getElementById('crop-monitor').classList.add('active');
+        document.querySelector('.navbar a:first-child').classList.add('active');
+    </script>
+</body>
+</html>
