@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-lang-kk="Ақылды ауыл шаруашылығы симуляторы" data-lang-ru="Умный симулятор сельского хозяйства">Ақылды ауыл шаруашылығы симуляторы</title>
     <style>
-        /* Existing styles remain unchanged */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: linear-gradient(to bottom, #e8f5e9, #ffffff); color: #333; line-height: 1.6; }
         .navbar { background: #4CAF50; padding: 15px; display: flex; justify-content: space-around; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: fixed; width: 100%; top: 0; z-index: 10; }
@@ -66,7 +65,96 @@
     </div>
 
     <div class="container">
-        <!-- Other sections remain unchanged -->
+        <div id="crop-monitor" class="section crop-monitor">
+            <div style="flex: 1;">
+                <h2 data-lang-kk="Егін суретін жүктеу" data-lang-ru="Загрузка изображения урожая">Егін суретін жүктеу</h2>
+                <div class="upload-box" onclick="document.getElementById('crop-upload').click();">
+                    <p data-lang-kk="Егін суретін осында сүйреңіз немесе басыңыз" data-lang-ru="Перетащите изображение урожая сюда или нажмите">Егін суретін осында сүйреңіз немесе басыңыз</p>
+                </div>
+                <input type="file" id="crop-upload" accept="image/*" onchange="previewCrop(this)">
+                <button class="btn" onclick="analyzeCrop()" data-lang-kk="Талдауды бастау" data-lang-ru="Начать анализ">Талдауды бастау</button>
+                <div class="progress-bar" id="crop-progress"><div class="progress-fill" id="crop-fill"></div></div>
+            </div>
+            <div style="flex: 1;">
+                <h2 data-lang-kk="Талдау нәтижелері" data-lang-ru="Результаты анализа">Талдау нәтижелері</h2>
+                <img src="crop.jpg" alt="Егін үлгісі" class="result-img" id="crop-result-img">
+                <p><strong data-lang-kk="Денсаулық деңгейі:" data-lang-ru="Уровень здоровья:"></strong><span id="crop-health" data-lang-kk="Талдауды күтіңіз" data-lang-ru="Ожидание анализа">Талдауды күтіңіз</span></p>
+                <div class="health-bar"><div class="health-fill" id="health-fill" style="width: 0;"></div></div>
+                <p><strong data-lang-kk="Ұсыныстар:" data-lang-ru="Рекомендации:"></strong><span id="crop-suggestion" data-lang-kk="Суретті жүктеп, талдаңыз" data-lang-ru="Загрузите изображение и выполните анализ">Суретті жүктеп, талдаңыз</span></p>
+            </div>
+        </div>
+
+        <div id="irrigation" class="section irrigation">
+            <h2 data-lang-kk="Ақылды суару" data-lang-ru="Умный полив">Ақылды суару</h2>
+            <div style="margin-bottom: 20px;">
+                <h3 data-lang-kk="Сенсорды қосу" data-lang-ru="Подключение сенсора">Сенсорды қосу</h3>
+                <p data-lang-kk="Қазіргі қосылым: Топырақ сенсоры #S001" data-lang-ru="Текущее подключение: Датчик почвы #S001">Қазіргі қосылым: Топырақ сенсоры #S001</p>
+            </div>
+            <div class="status">
+                <div class="status-card"><strong data-lang-kk="Ылғалдылық" data-lang-ru="Влажность"></strong><p data-lang-kk="60% (сенсор #S001)" data-lang-ru="60% (датчик #S001)">60% (сенсор #S001)</p></div>
+                <div class="status-card"><strong data-lang-kk="Температура" data-lang-ru="Температура"></strong><p>25°C</p></div>
+                <div class="status-card"><strong data-lang-kk="Қалған су көлемі" data-lang-ru="Остаток воды"></strong><p data-lang-kk="80%" data-lang-ru="80%">80%</p></div>
+            </div>
+            <div class="plan">
+                <h3 data-lang-kk="Суару жоспары" data-lang-ru="План полива">Суару жоспары</h3>
+                <div class="plan-card"><span data-lang-kk="27 ақпан 08:00" data-lang-ru="27 февраля 08:00">27 ақпан 08:00</span><span data-lang-kk="Су көлемі: 500 л" data-lang-ru="Объем воды: 500 л">Су көлемі: 500 л</span></div>
+                <div class="plan-card"><span data-lang-kk="28 ақпан 07:30" data-lang-ru="28 февраля 07:30">28 ақпан 07:30</span><span data-lang-kk="Су көлемі: 450 л" data-lang-ru="Объем воды: 450 л">Су көлемі: 450 л</span></div>
+            </div>
+            <img src="irrigation.jpg" alt="Суарылатын алқап" class="chart">
+        </div>
+
+        <div id="robot" class="section robot">
+            <h2 data-lang-kk="Автоматтандырылған жабдықтар" data-lang-ru="Автоматизированное оборудование">Автоматтандырылған жабдықтар</h2>
+            <div style="margin-bottom: 20px;">
+                <h3 data-lang-kk="Ұшқышсыз машинамен байланыс" data-lang-ru="Связь с беспилотной машиной">Ұшқышсыз машинамен байланыс</h3>
+                <p data-lang-kk="Қазіргі қосылым: Ауыл шаруашылығы роботы #R001" data-lang-ru="Текущее подключение: Сельскохозяйственный робот #R001">Қазіргі қосылым: Ауыл шаруашылығы роботы #R001</p>
+            </div>
+            <img src="robot.jpg" alt="Робот жолы" class="path-map">
+            <div class="report">
+                <p><strong data-lang-kk="Тапсырма орындалуы:" data-lang-ru="Выполнение задачи:"></strong>95%</p>
+                <p><strong data-lang-kk="Уақытты үнемдеу:" data-lang-ru="Экономия времени:"></strong>30 сағат</p>
+                <p><strong data-lang-kk="Энергия шығыны:" data-lang-ru="Расход энергии:"></strong><span data-lang-kk="Төмен" data-lang-ru="Низкий">Төмен</span></p>
+            </div>
+            <button class="btn" data-lang-kk="Симуляцияны бастау" data-lang-ru="Запустить симуляцию">Симуляцияны бастау</button>
+        </div>
+
+        <div id="weather" class="section">
+            <h2 data-lang-kk="AI метеорологиялық деректер" data-lang-ru="Метеоданные с ИИ">AI метеорологиялық деректер</h2>
+            <div style="margin-bottom: 20px;">
+                <h3 data-lang-kk="Күнді таңдау" data-lang-ru="Выбор даты">Күнді таңдау</h3>
+                <input type="date" class="date-input" id="weather-date">
+                <button class="btn" onclick="predictWeather()" data-lang-kk="Ауа райын болжау" data-lang-ru="Прогноз погоды">Ауа райын болжау</button>
+                <div class="progress-bar" id="weather-progress"><div class="progress-fill" id="weather-fill"></div></div>
+            </div>
+            <img src="weather.jpg" alt="Ауа райы фоны" style="width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
+            <div class="weather" id="weather-forecast">
+                <div class="weather-card"><strong id="day1-date" data-lang-kk="Күн" data-lang-ru="Дата">Күн</strong><p id="day1-weather" data-lang-kk="Болжамды күтіңіз" data-lang-ru="Ожидание прогноза">Болжамды күтіңіз</p></div>
+                <div class="weather-card"><strong id="day2-date" data-lang-kk="Күн" data-lang-ru="Дата">Күн</strong><p id="day2-weather" data-lang-kk="Болжамды күтіңіз" data-lang-ru="Ожидание прогноза">Болжамды күтіңіз</p></div>
+                <div class="weather-card"><strong id="day3-date" data-lang-kk="Күн" data-lang-ru="Дата">Күн</strong><p id="day3-weather" data-lang-kk="Болжамды күтіңіз" data-lang-ru="Ожидание прогноза">Болжамды күтіңіз</p></div>
+            </div>
+            <div class="dashboard">
+                <div class="dash-item"><strong data-lang-kk="Ауа сапасы" data-lang-ru="Качество воздуха"></strong><p data-lang-kk="Жақсы" data-lang-ru="Хорошее">Жақсы</p></div>
+                <div class="dash-item"><strong data-lang-kk="Топырақ рН" data-lang-ru="рН почвы"></strong><p>6.5</p></div>
+            </div>
+            <div class="suggestion"><strong data-lang-kk="Егу бойынша ұсыныстар:" data-lang-ru="Рекомендации по посеву:"></strong><span data-lang-kk="Алдағы үш күн бидай егуге жарамды." data-lang-ru="Следующие три дня подходят для посева пшеницы.">Алдағы үш күн бидай егуге жарамды.</span></div>
+        </div>
+
+        <div id="farm" class="section farm">
+            <div class="overview">
+                <h2 data-lang-kk="Шаруашылық шолуы" data-lang-ru="Обзор хозяйства">Шаруашылық шолуы</h2>
+                <img src="farm.jpg" alt="Шаруашылық панорамасы" class="farm-img">
+                <p><strong data-lang-kk="Егін жағдайы:" data-lang-ru="Состояние урожая:"></strong><span data-lang-kk="Жақсы" data-lang-ru="Хорошее">Жақсы</span></p>
+                <p><strong data-lang-kk="Тапсырма орындалуы:" data-lang-ru="Выполнение задач:"></strong></p>
+                <div class="progress"><div class="progress-fill"></div></div>
+            </div>
+            <div class="tasks">
+                <h3 data-lang-kk="Тапсырмалар тізімі" data-lang-ru="Список задач">Тапсырмалар тізімі</h3>
+                <div class="task-item" data-lang-kk="Егу - 27 ақпан" data-lang-ru="Посев - 27 февраля">Егу - 27 ақпан</div>
+                <div class="task-item" data-lang-kk="Суару - 28 ақпан" data-lang-ru="Полив - 28 февраля">Суару - 28 ақпан</div>
+                <div class="task-item" data-lang-kk="Арамшөп тазалау - 29 ақпан" data-lang-ru="Прополка - 29 февраля">Арамшөп тазалау - 29 ақпан</div>
+            </div>
+        </div>
+
         <div id="market" class="section market">
             <h2 data-lang-kk="Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу" data-lang-ru="Прогнозирование урожайности и помощь в принятии решений на основе данных">Өнімділікті болжау және деректерге негізделген шешімдерге көмектесу</h2>
             <img src="market.jpg" alt="Нарық трендтері" class="chart">
@@ -83,6 +171,7 @@
     </div>
 
     <script>
+        // Language switching functionality
         const translations = {
             kk: {
                 title: 'Ақылды ауыл шаруашылығы симуляторы',
@@ -90,8 +179,7 @@
                 crop_suggestion: 'Егін аздап су тапшылығын сезінеді, суаруды арттыру ұсынылады.',
                 weather_date_alert: 'Күнді таңдаңыз!',
                 profit_alert: 'Талапқа сәйкес енгізіңіз: 100 гектар, Бидай',
-                profit_format: (amount) => `${amount.toLocaleString('kk')} теңге`,
-                default_crop: 'Бидай'
+                profit_format: (amount) => `${amount.toLocaleString('kk')} теңге`
             },
             ru: {
                 title: 'Умный симулятор сельского хозяйства',
@@ -99,8 +187,7 @@
                 crop_suggestion: 'Урожай испытывает небольшой дефицит воды, рекомендуется увеличить полив.',
                 weather_date_alert: 'Выберите дату!',
                 profit_alert: 'Введите согласно требованиям: 100 гектаров, Пшеница',
-                profit_format: (amount) => `${amount.toLocaleString('ru')} тенге`,
-                default_crop: 'Пшеница'
+                profit_format: (amount) => `${amount.toLocaleString('ru')} тенге`
             }
         };
 
@@ -114,10 +201,9 @@
             document.querySelectorAll('input[data-lang-kk-placeholder]').forEach(input => {
                 input.placeholder = input.getAttribute(`data-lang-${lang}-placeholder`);
             });
-            // Reset crop type input to default for the selected language
-            document.getElementById('crop-type').value = translations[lang].default_crop;
         }
 
+        // Load saved language or default to Kazakh
         const savedLang = localStorage.getItem('language') || 'kk';
         switchLanguage(savedLang);
 
@@ -207,9 +293,7 @@
             const area = document.getElementById('area').value;
             const cropType = document.getElementById('crop-type').value;
             const lang = localStorage.getItem('language') || 'kk';
-            const expectedCrop = translations[lang].default_crop;
-
-            if (area !== '100' || cropType !== expectedCrop) {
+            if (area !== '100' || cropType !== (lang === 'kk' ? 'Бидай' : 'Пшеница')) {
                 alert(translations[lang].profit_alert);
                 return;
             }
